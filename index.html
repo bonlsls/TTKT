@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Management System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+        }
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #5cb85c;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #4cae4c;
+        }
+        .message {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #dff0d8;
+            color: #3c763d;
+            border: 1px solid #d6e9c6;
+            border-radius: 5px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Create a New Order</h1>
+
+        <form id="orderForm">
+            <label for="orderId">Order ID</label>
+            <input type="text" id="orderId" name="orderId" required>
+
+            <label for="productId">Product ID</label>
+            <input type="text" id="productId" name="productId" required>
+
+            <label for="quantity">Quantity</label>
+            <input type="number" id="quantity" name="quantity" required>
+
+            <h2>Payment Details</h2>
+
+            <label for="customerEmail">Customer Email</label>
+            <input type="email" id="customerEmail" name="customerEmail" required>
+
+            <label for="cardNumber">Card Number</label>
+            <input type="text" id="cardNumber" name="cardNumber" required>
+
+            <label for="expiryDate">Expiry Date</label>
+            <input type="text" id="expiryDate" name="expiryDate" placeholder="MM/YY" required>
+
+            <label for="cvv">CVV</label>
+            <input type="text" id="cvv" name="cvv" required>
+
+            <button type="submit">Submit Order</button>
+        </form>
+
+        <div class="message" id="responseMessage"></div>
+    </div>
+
+    <script>
+        document.getElementById('orderForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const orderId = document.getElementById('orderId').value;
+            const productId = document.getElementById('productId').value;
+            const quantity = document.getElementById('quantity').value;
+            const customerEmail = document.getElementById('customerEmail').value;
+            const cardNumber = document.getElementById('cardNumber').value;
+            const expiryDate = document.getElementById('expiryDate').value;
+            const cvv = document.getElementById('cvv').value;
+
+            const orderData = {
+                order_id: orderId,
+                product_id: productId,
+                quantity: parseInt(quantity),
+                payment_details: {
+                    customer_email: customerEmail,
+                    card_number: cardNumber,
+                    expiry_date: expiryDate,
+                    cvv: cvv
+                }
+            };
+
+            fetch('http://localhost:8080/create_order', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(orderData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                const messageDiv = document.getElementById('responseMessage');
+                messageDiv.style.display = 'block';
+                messageDiv.textContent = `Order created successfully: ${JSON.stringify(data)}`;
+            })
+            .catch(error => {
+                const messageDiv = document.getElementById('responseMessage');
+                messageDiv.style.display = 'block';
+                messageDiv.textContent = `Error creating order: ${error}`;
+            });
+        });
+    </script>
+
+</body>
+</html>
